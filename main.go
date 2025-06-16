@@ -162,10 +162,28 @@ func ListPrint(head Coordinat) Coordinat {
 	return head
 }
 
+func Intersection(first_head, second_head Coordinat) Coordinat {
+	var third_head Coordinat
+	elem := &first_head
+	for elem.next != nil {
+		_, count := Find(second_head, *elem)
+		if count > 0 {
+			third_head = Add(third_head, elem.x, elem.y)
+		}
+		elem = elem.next
+	}
+	_, count := Find(second_head, *elem)
+	if count > 0 {
+		third_head = Add(third_head, elem.x, elem.y)
+	}
+	elem = elem.next
+	return third_head
+}
+
 func main() {
-	var head Coordinat
+	var first_head, second_head Coordinat
 	var str_count, str_x, str_y string
-	fmt.Println("Enter number of elems of array")
+	fmt.Println("Enter number of elems of first array")
 	fmt.Scan(&str_count)
 	count, err := strconv.Atoi(str_count)
 	if err != nil {
@@ -181,10 +199,35 @@ func main() {
 			panic(err_x)
 		}
 		if i == 0 {
-			head = Initialization(x, y)
+			first_head = Initialization(x, y)
 		} else {
-			head = NewAdd(head, x, y)
+			first_head = NewAdd(first_head, x, y)
 		}
 	}
-	head = ListPrint(head)
+	first_head = ListPrint(first_head)
+	fmt.Println("Enter number of elems of second array")
+	fmt.Scan(&str_count)
+	count, err = strconv.Atoi(str_count)
+	if err != nil {
+		panic(err)
+	}
+	for i := 0; i < count; i++ {
+		fmt.Println("Enter coords on different lines ")
+		fmt.Scan(&str_x)
+		fmt.Scan(&str_y)
+		x, err_x := strconv.Atoi(str_x)
+		y, err_y := strconv.Atoi(str_y)
+		if err_x != nil || err_y != nil {
+			panic(err_x)
+		}
+		if i == 0 {
+			second_head = Initialization(x, y)
+		} else {
+			second_head = NewAdd(second_head, x, y)
+		}
+	}
+	second_head = ListPrint(second_head)
+	fmt.Println("Result:")
+	result_head := Intersection(first_head, second_head)
+	_ = ListPrint(result_head)
 }
