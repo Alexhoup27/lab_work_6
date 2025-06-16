@@ -13,7 +13,7 @@ type Coordinat struct {
 func IsBigger(first, second Coordinat) bool {
 	if first.x > second.x {
 		return true
-	} else if first.x == second.y {
+	} else if first.x == second.x {
 		if first.y > second.y {
 			return true
 		}
