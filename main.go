@@ -27,7 +27,7 @@ func Initialization(x, y int) Coordinat {
 	return head
 }
 
-func NewAdd(head Coordinat, x, y int) Coordinat {
+func Add(head Coordinat, x, y int) Coordinat {
 	var to_add Coordinat
 	to_add.x, to_add.y = x, y
 	if IsBigger(to_add, head) {
@@ -64,57 +64,34 @@ func NewAdd(head Coordinat, x, y int) Coordinat {
 	return head
 }
 
-func Add(head Coordinat, x, y int) Coordinat {
-	var to_add Coordinat
-	to_add.x, to_add.y = x, y
-	if IsBigger(head, to_add) {
-		to_add.next = &head
-		return to_add
-	}
-	if head.next == nil {
-		head.next = &to_add
-		return head
-	} else {
-		prev := &head
-		elem := head.next
-		for elem.next != nil {
-			if IsBigger(*elem, to_add) {
-				prev.next = &to_add
-				to_add.next = elem
-				return head
-			}
-			prev = elem
-			elem = elem.next
-		}
-		if IsBigger(*elem, to_add) {
-			prev.next = &to_add
-			to_add.next = elem
-			return head
-		} else {
-			elem.next = &to_add
-			return head
-		}
-	}
-	return head
-}
-
-func Delete(head Coordinat, x, y, count int) Coordinat {
+func Delete(head Coordinat, x, y, count int) Coordinat { // rework and check
 	if head.next == nil {
 		fmt.Println("Can`t delete head.\nUse Clear")
+		return head
 	}
 	if count <= 0 {
 		fmt.Println("Wrong count")
 		return head
 	}
-	elem := head
-	prev := head
 	now_count := 0
+	if head.x == x && head.y == y && now_count < count {
+		head = *head.next
+		now_count++
+	}
+	if head.next == nil {
+		if now_count < count {
+			fmt.Println("Can`t delete head\nUse Clear")
+		}
+		return head
+	}
+	prev := &head
+	elem := head.next
 	for elem.next != nil {
 		if elem.x == x && elem.y == y && now_count < count {
 			prev.next = elem.next
 			now_count++
 		}
-		elem = *elem.next
+		elem = elem.next
 	}
 	return head
 }
@@ -201,7 +178,7 @@ func main() {
 		if i == 0 {
 			first_head = Initialization(x, y)
 		} else {
-			first_head = NewAdd(first_head, x, y)
+			first_head = Add(first_head, x, y)
 		}
 	}
 	first_head = ListPrint(first_head)
@@ -223,7 +200,7 @@ func main() {
 		if i == 0 {
 			second_head = Initialization(x, y)
 		} else {
-			second_head = NewAdd(second_head, x, y)
+			second_head = Add(second_head, x, y)
 		}
 	}
 	second_head = ListPrint(second_head)
