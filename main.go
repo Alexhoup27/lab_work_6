@@ -10,7 +10,13 @@ type Coordinat struct {
 	x, y int
 }
 
-func IsBigger(first, second Coordinat) bool {
+func Initialization(x, y int) *Coordinat {
+	var head Coordinat
+	head.x, head.y = x, y
+	return &head
+}
+
+func IsBigger(first, second *Coordinat) bool {
 	if first.x > second.x {
 		return true
 	} else if first.x == second.x {
@@ -21,50 +27,46 @@ func IsBigger(first, second Coordinat) bool {
 	return false
 }
 
-func Initialization(x, y int) Coordinat {
-	var head Coordinat
-	head.x, head.y = x, y
-	return head
-}
-
-func Add(head Coordinat, x, y int) Coordinat {
+func Add(head *Coordinat, x, y int) *Coordinat {
 	var to_add Coordinat
 	to_add.x, to_add.y = x, y
-	if IsBigger(to_add, head) {
-		to_add.next = &head
-		return to_add
+	if IsBigger(&to_add, head) {
+		to_add.next = head
+		return &to_add
 	}
-	if head.next == nil {
-		if IsBigger(head, to_add) {
-			head.next = &to_add
-			return head
-		} else {
-			to_add.next = &head
-			return to_add
-		}
-	} else {
-		prev := &head
-		elem := head.next
-		for elem.next != nil {
-			if IsBigger(to_add, *elem) {
-				prev.next = &to_add
-				to_add.next = elem
-				return head
-			}
-			prev = elem
-			elem = elem.next
-		}
-		if IsBigger(to_add, *elem) {
+	prev := head
+	elem := head
+	for elem.next != nil {
+		if IsBigger(&to_add, elem) {
 			prev.next = &to_add
 			to_add.next = elem
-		} else {
-			elem.next = &to_add
+			return head
 		}
+		prev = elem
+		elem = elem.next
 	}
+	elem.next = &to_add
 	return head
 }
 
-func Delete(head Coordinat, x, y, count int) Coordinat { // rework and check
+func Find(head, elem *Coordinat) (*Coordinat, int) {
+	count := 0
+	now_elem := head
+	// _, _len := Length(head)
+	// fmt.Println(_len)
+	for now_elem != nil {
+		// fmt.Println("Infinity")
+		if now_elem.x == elem.x && now_elem.y == elem.y {
+			count++
+		}
+		now_elem = now_elem.next
+	}
+	return head, count
+}
+
+func NewDelete(head *Coordinat, x, y, count int) *Coordinat {
+	var new_elem Coordinat
+	now_count := 0
 	if head.next == nil {
 		fmt.Println("Can`t delete head.\nUse Clear")
 		return head
@@ -73,20 +75,15 @@ func Delete(head Coordinat, x, y, count int) Coordinat { // rework and check
 		fmt.Println("Wrong count")
 		return head
 	}
-	now_count := 0
-	if head.x == x && head.y == y && now_count < count {
-		head = *head.next
-		now_count++
-	}
-	if head.next == nil {
-		if now_count < count {
-			fmt.Println("Can`t delete head\nUse Clear")
-		}
+	new_elem.x, new_elem.y = x, y
+	head, count_of_elem := Find(head, &new_elem)
+	if count >= count_of_elem {
+		fmt.Println("Can`t delete that count of elems. Count so big")
 		return head
 	}
-	prev := &head
+	prev := head
 	elem := head.next
-	for elem.next != nil {
+	for elem != nil {
 		if elem.x == x && elem.y == y && now_count < count {
 			prev.next = elem.next
 			now_count++
@@ -96,69 +93,54 @@ func Delete(head Coordinat, x, y, count int) Coordinat { // rework and check
 	return head
 }
 
-func Find(head, elem Coordinat) (Coordinat, int) {
-	count := 0
-	now_elem := head
-	for now_elem.next != nil {
-		if now_elem.x == elem.x && now_elem.y == elem.y {
-			count++
-		}
-		now_elem = *now_elem.next
-	}
-	if now_elem == elem {
-		count++
-	}
-	return head, count
-}
-
-func Length(head Coordinat) (Coordinat, int) {
+func Length(head *Coordinat) (*Coordinat, int) {
 	elem := head
-	_len := 1
-	for elem.next != nil {
+	_len := 0
+	for elem != nil {
 		_len++
-		elem = *elem.next
+		elem = elem.next
 	}
 	return head, _len
 }
 
-func Clear(head Coordinat) *int {
-	for head.next.next != nil {
-		head.next = head.next.next
-	}
-	head.next = nil
+func Clear(head *Coordinat) *Coordinat {
 	return nil
 }
 
-func ListPrint(head Coordinat) Coordinat {
+func ListPrint(head *Coordinat) *Coordinat {
 	elem := head
-	for elem.next != nil {
+	for elem != nil {
 		fmt.Println(elem.x, elem.y)
-		elem = *elem.next
+		elem = elem.next
 	}
-	fmt.Println(elem.x, elem.y)
 	return head
 }
 
-func Intersection(first_head, second_head Coordinat) Coordinat {
-	var third_head Coordinat
-	elem := &first_head
-	for elem.next != nil {
-		_, count := Find(second_head, *elem)
-		if count > 0 {
-			third_head = Add(third_head, elem.x, elem.y)
+func Intersection(first_head, second_head *Coordinat) *Coordinat {
+	var third_head *Coordinat
+	elem := first_head
+	for elem != nil {
+		_, second_count := Find(second_head, elem)
+		_, first_count := Find(first_head, elem)
+		_, third_count := Find(third_head, elem)
+		if third_count == 0 {
+			count := min(first_count, second_count)
+			for i := 0; i < count; i++ {
+				if third_head == nil {
+					third_head = Initialization(elem.x, elem.y)
+				} else {
+					third_head = Add(third_head, elem.x, elem.y)
+				}
+			}
 		}
 		elem = elem.next
+
 	}
-	_, count := Find(second_head, *elem)
-	if count > 0 {
-		third_head = Add(third_head, elem.x, elem.y)
-	}
-	elem = elem.next
 	return third_head
 }
 
 func main() {
-	var first_head, second_head Coordinat
+	var first_head, second_head *Coordinat
 	var str_count, str_x, str_y string
 	fmt.Println("Enter number of elems of first array")
 	fmt.Scan(&str_count)
@@ -172,8 +154,11 @@ func main() {
 		fmt.Scan(&str_y)
 		x, err_x := strconv.Atoi(str_x)
 		y, err_y := strconv.Atoi(str_y)
-		if err_x != nil || err_y != nil {
+		if err_x != nil {
 			panic(err_x)
+		}
+		if err_y != nil {
+			panic(err_y)
 		}
 		if i == 0 {
 			first_head = Initialization(x, y)
@@ -204,6 +189,9 @@ func main() {
 		}
 	}
 	second_head = ListPrint(second_head)
+	fmt.Println("After delete")
+	first_head = NewDelete(first_head, 2, 2, 2)
+	ListPrint(first_head)
 	fmt.Println("Result:")
 	result_head := Intersection(first_head, second_head)
 	_ = ListPrint(result_head)
