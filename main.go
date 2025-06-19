@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 )
 
 type Coordinat struct {
@@ -10,7 +9,7 @@ type Coordinat struct {
 	x, y int
 }
 
-func Initialization(x, y int) *Coordinat {
+func Initialization(x, y int) *Coordinat { //delete
 	var head Coordinat
 	head.x, head.y = x, y
 	return &head
@@ -27,7 +26,7 @@ func IsBigger(first, second *Coordinat) bool {
 	return false
 }
 
-func Add(head *Coordinat, x, y int) *Coordinat {
+func Add(head *Coordinat, x, y int) *Coordinat { //rework without init
 	var to_add Coordinat
 	to_add.x, to_add.y = x, y
 	if IsBigger(&to_add, head) {
@@ -36,7 +35,7 @@ func Add(head *Coordinat, x, y int) *Coordinat {
 	}
 	prev := head
 	elem := head
-	for elem.next != nil {
+	for elem != nil {
 		if IsBigger(&to_add, elem) {
 			prev.next = &to_add
 			to_add.next = elem
@@ -45,7 +44,7 @@ func Add(head *Coordinat, x, y int) *Coordinat {
 		prev = elem
 		elem = elem.next
 	}
-	elem.next = &to_add
+	prev.next = &to_add
 	return head
 }
 
@@ -64,7 +63,8 @@ func Find(head, elem *Coordinat) (*Coordinat, int) {
 	return head, count
 }
 
-func NewDelete(head *Coordinat, x, y, count int) *Coordinat {
+func NewDelete(head *Coordinat, x, y, count int) *Coordinat { //rework don`t deele last object
+	var prev *Coordinat
 	var new_elem Coordinat
 	now_count := 0
 	if head.next == nil {
@@ -77,17 +77,26 @@ func NewDelete(head *Coordinat, x, y, count int) *Coordinat {
 	}
 	new_elem.x, new_elem.y = x, y
 	head, count_of_elem := Find(head, &new_elem)
-	if count >= count_of_elem {
+	if count > count_of_elem {
 		fmt.Println("Can`t delete that count of elems. Count so big")
 		return head
 	}
-	prev := head
-	elem := head.next
+	prev = nil
+	elem := head
 	for elem != nil {
 		if elem.x == x && elem.y == y && now_count < count {
-			prev.next = elem.next
+			if prev == nil {
+				head = elem.next
+				prev = nil
+				elem = head
+			} else {
+				prev.next = elem.next
+				elem = elem.next
+				continue
+			}
 			now_count++
 		}
+		prev = elem
 		elem = elem.next
 	}
 	return head
@@ -139,60 +148,83 @@ func Intersection(first_head, second_head *Coordinat) *Coordinat {
 	return third_head
 }
 
+//	func main() {
+//		var first_head, second_head *Coordinat
+//		var str_count, str_x, str_y string
+//		fmt.Println("Enter number of elems of first array")
+//		fmt.Scan(&str_count)
+//		count, err := strconv.Atoi(str_count)
+//		if err != nil {
+//			panic(err)
+//		}
+//		for i := 0; i < count; i++ {
+//			fmt.Println("Enter coords on different lines ")
+//			fmt.Scan(&str_x)
+//			fmt.Scan(&str_y)
+//			x, err_x := strconv.Atoi(str_x)
+//			y, err_y := strconv.Atoi(str_y)
+//			if err_x != nil {
+//				panic(err_x)
+//			}
+//			if err_y != nil {
+//				panic(err_y)
+//			}
+//			if i == 0 {
+//				first_head = Initialization(x, y)
+//			} else {
+//				first_head = Add(first_head, x, y)
+//			}
+//		}
+//		first_head = ListPrint(first_head)
+//		fmt.Println("Enter number of elems of second array")
+//		fmt.Scan(&str_count)
+//		count, err = strconv.Atoi(str_count)
+//		if err != nil {
+//			panic(err)
+//		}
+//		for i := 0; i < count; i++ {
+//			fmt.Println("Enter coords on different lines ")
+//			fmt.Scan(&str_x)
+//			fmt.Scan(&str_y)
+//			x, err_x := strconv.Atoi(str_x)
+//			y, err_y := strconv.Atoi(str_y)
+//			if err_x != nil || err_y != nil {
+//				panic(err_x)
+//			}
+//			if i == 0 {
+//				second_head = Initialization(x, y)
+//			} else {
+//				second_head = Add(second_head, x, y)
+//			}
+//		}
+//		second_head = ListPrint(second_head)
+//		fmt.Println("After delete 1")
+//		first_head = NewDelete(first_head, 2, 2, 2)
+//		ListPrint(first_head)
+//		fmt.Println("After delete 2")
+//		second_head = NewDelete(second_head, 2, 2, 2)
+//		ListPrint(second_head)
+//		fmt.Println("Result:")
+//		result_head := Intersection(first_head, second_head)
+//		_ = ListPrint(result_head)
+//	}
 func main() {
-	var first_head, second_head *Coordinat
-	var str_count, str_x, str_y string
-	fmt.Println("Enter number of elems of first array")
-	fmt.Scan(&str_count)
-	count, err := strconv.Atoi(str_count)
-	if err != nil {
-		panic(err)
+	fmt.Println("---------------- СФОРМИРОВАЛИ СПИСОК------------------------:")
+	var second_head1 *Coordinat
+
+	second_head1 = Initialization(2, 2)
+
+	for i := 0; i < 6; i++ {
+		second_head1 = Add(second_head1, i%5, i%3)
 	}
-	for i := 0; i < count; i++ {
-		fmt.Println("Enter coords on different lines ")
-		fmt.Scan(&str_x)
-		fmt.Scan(&str_y)
-		x, err_x := strconv.Atoi(str_x)
-		y, err_y := strconv.Atoi(str_y)
-		if err_x != nil {
-			panic(err_x)
-		}
-		if err_y != nil {
-			panic(err_y)
-		}
-		if i == 0 {
-			first_head = Initialization(x, y)
-		} else {
-			first_head = Add(first_head, x, y)
-		}
-	}
-	first_head = ListPrint(first_head)
-	fmt.Println("Enter number of elems of second array")
-	fmt.Scan(&str_count)
-	count, err = strconv.Atoi(str_count)
-	if err != nil {
-		panic(err)
-	}
-	for i := 0; i < count; i++ {
-		fmt.Println("Enter coords on different lines ")
-		fmt.Scan(&str_x)
-		fmt.Scan(&str_y)
-		x, err_x := strconv.Atoi(str_x)
-		y, err_y := strconv.Atoi(str_y)
-		if err_x != nil || err_y != nil {
-			panic(err_x)
-		}
-		if i == 0 {
-			second_head = Initialization(x, y)
-		} else {
-			second_head = Add(second_head, x, y)
-		}
-	}
-	second_head = ListPrint(second_head)
-	fmt.Println("After delete")
-	first_head = NewDelete(first_head, 2, 2, 2)
-	ListPrint(first_head)
-	fmt.Println("Result:")
-	result_head := Intersection(first_head, second_head)
-	_ = ListPrint(result_head)
+	second_head1 = ListPrint(second_head1)
+	var _count int
+	el := Initialization(1, 1)
+	second_head1, _count = Find(second_head1, el)
+	fmt.Println("------------ ПОИСК В СПИСКЕ (1,1) ----------------------------:")
+	fmt.Println("Find:", _count)
+
+	fmt.Println("?????????????????? УДАЛЕНИЕ (1,1) в количестве >=5-----------------------------:")
+	second_head1 = NewDelete(second_head1, 2, 2, 2)
+	_ = ListPrint(second_head1)
 }
