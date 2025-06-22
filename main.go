@@ -9,7 +9,7 @@ type Coordinat struct {
 	x, y int
 }
 
-func Initialization(x, y int) *Coordinat { //delete
+func Initialization(x, y int) *Coordinat {
 	var head Coordinat
 	head.x, head.y = x, y
 	return &head
@@ -26,7 +26,7 @@ func IsBigger(first, second *Coordinat) bool {
 	return false
 }
 
-func Add(head *Coordinat, x, y int) *Coordinat { //rework without init
+func Add(head *Coordinat, x, y int) *Coordinat {
 	var to_add Coordinat
 	to_add.x, to_add.y = x, y
 	if IsBigger(&to_add, head) {
@@ -63,7 +63,7 @@ func Find(head, elem *Coordinat) (*Coordinat, int) {
 	return head, count
 }
 
-func NewDelete(head *Coordinat, x, y, count int) *Coordinat { //rework don`t deele last object
+func NewDelete(head *Coordinat, x, y, count int) *Coordinat {
 	var prev *Coordinat
 	var new_elem Coordinat
 	now_count := 0
@@ -84,20 +84,24 @@ func NewDelete(head *Coordinat, x, y, count int) *Coordinat { //rework don`t dee
 	prev = nil
 	elem := head
 	for elem != nil {
-		if elem.x == x && elem.y == y && now_count < count {
+		if elem.x == x && elem.y == y && now_count <= count {
 			if prev == nil {
 				head = elem.next
 				prev = nil
 				elem = head
+				now_count++
 			} else {
 				prev.next = elem.next
 				elem = elem.next
+				now_count++
 				continue
 			}
-			now_count++
 		}
 		prev = elem
 		elem = elem.next
+	}
+	if head.x == x && head.y == y && now_count+1 == count {
+		return nil
 	}
 	return head
 }
@@ -209,22 +213,86 @@ func Intersection(first_head, second_head *Coordinat) *Coordinat {
 //		_ = ListPrint(result_head)
 //	}
 func main() {
+	fmt.Println("---------------- TEST 1------------------------:")
 	fmt.Println("---------------- СФОРМИРОВАЛИ СПИСОК------------------------:")
 	var second_head1 *Coordinat
 
 	second_head1 = Initialization(2, 2)
 
 	for i := 0; i < 6; i++ {
-		second_head1 = Add(second_head1, i%5, i%3)
+		second_head1 = Add(second_head1, 2, 2)
 	}
 	second_head1 = ListPrint(second_head1)
 	var _count int
-	el := Initialization(1, 1)
+	el := Initialization(2, 2)
 	second_head1, _count = Find(second_head1, el)
-	fmt.Println("------------ ПОИСК В СПИСКЕ (1,1) ----------------------------:")
+	fmt.Println("------------ ПОИСК В СПИСКЕ (2,2) ----------------------------:")
 	fmt.Println("Find:", _count)
 
-	fmt.Println("?????????????????? УДАЛЕНИЕ (1,1) в количестве >=5-----------------------------:")
+	fmt.Println("?????????????????? УДАЛЕНИЕ (2,2) в количестве =7-----------------------------:")
+	second_head1 = NewDelete(second_head1, 2, 2, 7)
+	_ = ListPrint(second_head1)
+
+	fmt.Println("---------------- TEST 2------------------------:")
+	fmt.Println("---------------- СФОРМИРОВАЛИ СПИСОК------------------------:")
+	second_head1 = Initialization(2, 2)
+
+	for i := 0; i < 6; i++ {
+		second_head1 = Add(second_head1, i/2+1, i/2+1)
+	}
+	second_head1 = ListPrint(second_head1)
+
+	el = Initialization(2, 2)
+	second_head1, _count = Find(second_head1, el)
+	fmt.Println("------------ ПОИСК В СПИСКЕ (2,2) ----------------------------:")
+	fmt.Println("Find:", _count)
+
+	fmt.Println("?????????????????? УДАЛЕНИЕ (2,2) в количестве =2-----------------------------:")
 	second_head1 = NewDelete(second_head1, 2, 2, 2)
 	_ = ListPrint(second_head1)
+
+	fmt.Println("---------------- TEST 3------------------------:")
+	fmt.Println("---------------- СФОРМИРОВАЛИ СПИСОК------------------------:")
+	second_head1 = Initialization(2, 2)
+
+	for i := 0; i < 6; i++ {
+		if i > 3 {
+			second_head1 = Add(second_head1, 2, 2)
+
+		} else {
+			second_head1 = Add(second_head1, 1, 1)
+
+		}
+	}
+	second_head1 = ListPrint(second_head1)
+
+	el = Initialization(2, 2)
+	second_head1, _count = Find(second_head1, el)
+	fmt.Println("------------ ПОИСК В СПИСКЕ (2,2) ----------------------------:")
+	fmt.Println("Find:", _count)
+
+	fmt.Println("?????????????????? УДАЛЕНИЕ (2,2) в количестве =3-----------------------------:")
+	second_head1 = NewDelete(second_head1, 2, 2, 3)
+	_ = ListPrint(second_head1)
+
+	fmt.Println("---------------- TEST 4------------------------:")
+	fmt.Println("---------------- СФОРМИРОВАЛИ СПИСОК------------------------:")
+	second_head1 = Initialization(2, 2)
+
+	for i := 0; i < 6; i++ {
+
+		second_head1 = Add(second_head1, i/2*3+2, i/2*3+2)
+
+	}
+	second_head1 = ListPrint(second_head1)
+
+	el = Initialization(2, 2)
+	second_head1, _count = Find(second_head1, el)
+	fmt.Println("------------ ПОИСК В СПИСКЕ (2,2) ----------------------------:")
+	fmt.Println("Find:", _count)
+
+	fmt.Println("?????????????????? УДАЛЕНИЕ (2,2) в количестве =3-----------------------------:")
+	second_head1 = NewDelete(second_head1, 2, 2, 2)
+	_ = ListPrint(second_head1)
+
 }
