@@ -84,7 +84,7 @@ func NewDelete(head *Coordinat, x, y, count int) *Coordinat {
 	prev = nil
 	elem := head
 	for elem != nil {
-		if elem.x == x && elem.y == y && now_count <= count {
+		if elem.x == x && elem.y == y && now_count < count {
 			if prev == nil {
 				head = elem.next
 				prev = nil
@@ -101,7 +101,7 @@ func NewDelete(head *Coordinat, x, y, count int) *Coordinat {
 		elem = elem.next
 	}
 	if head.x == x && head.y == y && now_count+1 == count {
-		return nil
+		return head.next
 	}
 	return head
 }
@@ -292,7 +292,20 @@ func main() {
 	fmt.Println("Find:", _count)
 
 	fmt.Println("?????????????????? УДАЛЕНИЕ (2,2) в количестве =3-----------------------------:")
-	second_head1 = NewDelete(second_head1, 2, 2, 2)
+	second_head1 = NewDelete(second_head1, 8, 8, 1)
+	second_head1 = NewDelete(second_head1, 2, 2, 1)
+	second_head1 = NewDelete(second_head1, 5, 5, 1)
 	_ = ListPrint(second_head1)
+	fmt.Println("---------------- TEST 5------------------------:")
+	fmt.Println("---------------- СФОРМИРОВАЛИ СПИСОК------------------------:")
+
+	for i := 0; i < 6; i++ {
+
+		second_head1 = Add(second_head1, i/2*3+2, i/2*3+2)
+
+	}
+	_ = ListPrint(second_head1)
+	fmt.Println("------------ ПОИСК В СПИСКЕ (2,2) ----------------------------:")
+	fmt.Println("Find:", _count)
 
 }
